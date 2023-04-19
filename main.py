@@ -298,4 +298,5 @@ with gr.Blocks(css=my_css) as demo:
 if __name__ == "__main__":
     # demo.queue(concurrency_count=9)
     demo.title = "Bing本地服务"
-    demo.launch(server_name="0.0.0.0", server_port=5000)
+    port = int(os.getenv("PORT", default="8080"))
+    demo.launch(server_name="0.0.0.0", server_port=port)

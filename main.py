@@ -10,15 +10,19 @@ import httpcore
 from EdgeGPT import Chatbot, ConversationStyle
 from utils import postprocess
 import json
+import os
 
 def load_cookies(cookie_path):
     with open(cookie_path, 'r', encoding='utf8') as f:
         cookies = json.load(f)
     return cookies
 
-cookiePath = r"./cookiePath"  # 填写存放Bing的cookies目录
-cookieList = [_.as_posix() for _ in Path(cookiePath).iterdir()]
-print(cookieList)
+if os.getenv("COOKIES"):
+    cookieList = [json.loads(os.getenv("COOKIES"))]
+else:
+    cookiePath = r"./cookiePath"  # 填写存放Bing的cookies目录
+    cookieList = [load_cookies(_.as_posix()) for _ in Path(cookiePath).iterdir()]
+
 cookieDict = {}  # {IP: [bot, Bing]}
 IP = ""
 QUESTION = []
@@ -115,7 +119,7 @@ with gr.Blocks(css=my_css) as demo:
     def change_style(choice, history, request: gr.Request):
         global cookieList, cookieDict, IP
         IP = request.client.host
-        cookieDict[IP] = [Chatbot(cookies = load_cookies(random.choice(cookieList)))]
+        cookieDict[IP] = [Chatbot(cookies = random.choice(cookieList))]
         if choice == "🥳更有创造性":
             cookieDict[IP][1] = partial(
                 cookieDict[IP][0].ask, conversation_style=ConversationStyle.creative
@@ -140,7 +144,7 @@ with gr.Blocks(css=my_css) as demo:
         注册bot
         """
         global cookieList, cookieDict, IP
-        cookieDict[IP] = [Chatbot(cookies = load_cookies(random.choice(cookieList))), None]
+        cookieDict[IP] = [Chatbot(cookies = random.choice(cookieList)), None]
         if choice == "🥳更有创造性":
             cookieDict[IP][1] = partial(
                 cookieDict[IP][0].ask, conversation_style=ConversationStyle.creative

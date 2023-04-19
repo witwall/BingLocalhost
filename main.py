@@ -9,9 +9,16 @@ import gradio as gr
 import httpcore
 from EdgeGPT import Chatbot, ConversationStyle
 from utils import postprocess
+import json
+
+def load_cookies(cookie_path):
+    with open(cookie_path, 'r', encoding='utf8') as f:
+        cookies = json.load(f)
+    return cookies
 
 cookiePath = r"./cookiePath"  # 填写存放Bing的cookies目录
-cookieList = [_ for _ in Path(cookiePath).iterdir()]
+cookieList = [_.as_posix() for _ in Path(cookiePath).iterdir()]
+print(cookieList)
 cookieDict = {}  # {IP: [bot, Bing]}
 IP = ""
 QUESTION = []
@@ -108,7 +115,7 @@ with gr.Blocks(css=my_css) as demo:
     def change_style(choice, history, request: gr.Request):
         global cookieList, cookieDict, IP
         IP = request.client.host
-        cookieDict[IP] = [Chatbot(random.choice(cookieList)), None]
+        cookieDict[IP] = [Chatbot(cookies = load_cookies(random.choice(cookieList)))]
         if choice == "🥳更有创造性":
             cookieDict[IP][1] = partial(
                 cookieDict[IP][0].ask, conversation_style=ConversationStyle.creative
@@ -133,7 +140,7 @@ with gr.Blocks(css=my_css) as demo:
         注册bot
         """
         global cookieList, cookieDict, IP
-        cookieDict[IP] = [Chatbot(random.choice(cookieList)), None]
+        cookieDict[IP] = [Chatbot(cookies = load_cookies(random.choice(cookieList))), None]
         if choice == "🥳更有创造性":
             cookieDict[IP][1] = partial(
                 cookieDict[IP][0].ask, conversation_style=ConversationStyle.creative

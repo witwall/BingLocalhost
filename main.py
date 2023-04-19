@@ -196,27 +196,27 @@ with gr.Blocks(css=my_css) as demo:
                     gr.Button.update(value="你好，Bing。请随便写一首诗。", visible=True),
                     gr.Button.update(value="你好，Bing。帮我搜索最近的新闻。", visible=True),
                 )
-        match len(QUESTION):
-            case 0:
+        exp =  len(QUESTION)
+        if exp == 0:
                 return (history,
                 gr.Button.update(visible=False), gr.Button.update(
                     visible=False
                 ), gr.Button.update(visible=False))
-            case 1:
+        elif exp == 1:
                 return (
                     history,
                     gr.Button.update(value=QUESTION[0], visible=True),
                     gr.Button.update(visible=False),
                     gr.Button.update(visible=False),
                 )
-            case 2:
+        elif exp ==  2:
                 return (
                     history,
                     gr.Button.upda1te(value=QUESTION[0], visible=True),
                     gr.Button.update(value=QUESTION[1], visible=True),
                     gr.Button.update(visible=False),
                 )
-            case _:
+        else:
                 return (
                     history,
                     gr.Button.update(value=QUESTION[0], visible=True),
